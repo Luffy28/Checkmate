@@ -351,10 +351,17 @@ class MongoMonitorsRepository implements IMonitorsRepository {
 		};
 
 		const notificationIds = (doc.notifications ?? []).map((notification) => toStringId(notification));
-		const notificationEscalations = doc.notificationEscalations ? {
-			notificationIds: (doc.notificationEscalations.notificationIds ?? [doc.notificationEscalations.notificationId ?? doc.notificationEscalations.channelId] ?? []).map((id: any) => toStringId(id)).filter((id: string) => id),
-			delayMinutes: doc.notificationEscalations.delayMinutes ?? 0,
-		} : undefined;
+		const notificationEscalations = doc.notificationEscalations
+			? {
+					notificationIds: (
+						doc.notificationEscalations.notificationIds ?? [doc.notificationEscalations.notificationId ?? doc.notificationEscalations.channelId] ??
+						[]
+					)
+						.map((id: any) => toStringId(id))
+						.filter((id: string) => id),
+					delayMinutes: doc.notificationEscalations.delayMinutes ?? 0,
+				}
+			: undefined;
 
 		return {
 			id: toStringId(doc._id),
@@ -415,10 +422,17 @@ class MongoMonitorsRepository implements IMonitorsRepository {
 		};
 
 		const notificationIds = (doc.notifications ?? []).map((notification: unknown) => toStringId(notification));
-		const notificationEscalations = doc.notificationEscalations ? {
-			notificationIds: (doc.notificationEscalations.notificationIds ?? [doc.notificationEscalations.notificationId ?? doc.notificationEscalations.channelId] ?? []).map((id: any) => toStringId(id)).filter((id: string) => id),
-			delayMinutes: doc.notificationEscalations.delayMinutes ?? 0,
-		} : undefined;
+		const notificationEscalations = doc.notificationEscalations
+			? {
+					notificationIds: (
+						doc.notificationEscalations.notificationIds ?? [doc.notificationEscalations.notificationId ?? doc.notificationEscalations.channelId] ??
+						[]
+					)
+						.map((id: any) => toStringId(id))
+						.filter((id: string) => id),
+					delayMinutes: doc.notificationEscalations.delayMinutes ?? 0,
+				}
+			: undefined;
 
 		return {
 			id: toStringId(doc._id),

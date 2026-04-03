@@ -15,9 +15,15 @@ const createHelper = (overrides?: Partial<ConstructorParameters<typeof SuperSimp
 		logger: createLogger(),
 		networkService: { requestStatus: jest.fn() },
 		statusService: statusServiceMock,
-		notificationsService: { handleNotifications: jest.fn().mockResolvedValue(undefined), sendEscalationNotification: jest.fn().mockResolvedValue(true) },
+		notificationsService: {
+			handleNotifications: jest.fn().mockResolvedValue(undefined),
+			sendEscalationNotification: jest.fn().mockResolvedValue(true),
+		},
 		checkService: { buildCheck: jest.fn().mockResolvedValue({}) },
-		settingsService: { getSettings: jest.fn().mockReturnValue({ clientHost: "http://localhost" }), getDBSettings: jest.fn().mockResolvedValue({ checkTTL: 30 }) },
+		settingsService: {
+			getSettings: jest.fn().mockReturnValue({ clientHost: "http://localhost" }),
+			getDBSettings: jest.fn().mockResolvedValue({ checkTTL: 30 }),
+		},
 		buffer: { addToBuffer: jest.fn() },
 		incidentService: { handleIncident: jest.fn().mockResolvedValue(undefined) },
 		maintenanceWindowsRepository,
@@ -26,8 +32,8 @@ const createHelper = (overrides?: Partial<ConstructorParameters<typeof SuperSimp
 		monitorStatsRepository: { deleteByMonitorIdsNotIn: jest.fn() },
 		checksRepository: { deleteByMonitorIdsNotIn: jest.fn() },
 		incidentsRepository: { findActiveByMonitorId: jest.fn().mockResolvedValue(null), updateById: jest.fn() },
-		geoChecksService: { } ,
-		geoChecksRepository: { },
+		geoChecksService: {},
+		geoChecksRepository: {},
 		...overrides,
 	});
 	return { helper, maintenanceWindowsRepository };
@@ -55,7 +61,10 @@ describe("SuperSimpleQueueHelper", () => {
 				statusService: {
 					updateMonitorStatus: jest.fn().mockResolvedValue({ monitor: updatedMonitor, statusChanged: true, prevStatus: false, code: 200 }),
 				},
-				notificationsService: { handleNotifications: jest.fn().mockResolvedValue(undefined), sendEscalationNotification: jest.fn().mockResolvedValue(false) },
+				notificationsService: {
+					handleNotifications: jest.fn().mockResolvedValue(undefined),
+					sendEscalationNotification: jest.fn().mockResolvedValue(false),
+				},
 			});
 			jest.spyOn(helper, "isInMaintenanceWindow").mockResolvedValue(false);
 			const job = helper.getMonitorJob();

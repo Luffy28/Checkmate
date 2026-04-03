@@ -200,7 +200,11 @@ export class SuperSimpleQueueHelper implements ISuperSimpleQueueHelper {
 	};
 
 	private processEscalations = async (monitor: Monitor, monitorStatusResponse: any, decision: MonitorActionDecision) => {
-		if (!monitor.notificationEscalations || !monitor.notificationEscalations.notificationIds || monitor.notificationEscalations.notificationIds.length === 0) {
+		if (
+			!monitor.notificationEscalations ||
+			!monitor.notificationEscalations.notificationIds ||
+			monitor.notificationEscalations.notificationIds.length === 0
+		) {
 			return;
 		}
 

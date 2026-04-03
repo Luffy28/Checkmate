@@ -66,10 +66,14 @@ export const createMonitorBodyValidation = z.object({
 	memoryAlertThreshold: z.number().optional(),
 	diskAlertThreshold: z.number().optional(),
 	tempAlertThreshold: z.number().optional(),
-	notifications: z.array(z.string()).optional(),		notificationEscalations: z.object({
+	notifications: z.array(z.string()).optional(),
+	notificationEscalations: z
+		.object({
 			notificationIds: z.array(z.string()).min(1),
 			delayMinutes: z.number().min(1),
-		}).optional(),	secret: z.string().optional(),
+		})
+		.optional(),
+	secret: z.string().optional(),
 	jsonPath: z.union([z.string(), z.literal("")]).optional(),
 	expectedValue: z.union([z.string(), z.literal("")]).optional(),
 	matchMethod: z.union([z.enum(MonitorMatchMethods), z.literal("")]).optional(),
@@ -102,10 +106,12 @@ export const editMonitorBodyValidation = z.object({
 	memoryAlertThreshold: z.number().optional(),
 	diskAlertThreshold: z.number().optional(),
 	tempAlertThreshold: z.number().optional(),
-	notificationEscalations: z.object({
-		notificationIds: z.array(z.string()).min(1),
-		delayMinutes: z.number().min(1),
-	}).optional(),
+	notificationEscalations: z
+		.object({
+			notificationIds: z.array(z.string()).min(1),
+			delayMinutes: z.number().min(1),
+		})
+		.optional(),
 	gameId: z.union([z.string(), z.literal("")]).optional(),
 	grpcServiceName: z.union([z.string(), z.literal("")]).optional(),
 	selectedDisks: z.array(z.string()).optional(),

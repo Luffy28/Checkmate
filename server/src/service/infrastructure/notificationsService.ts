@@ -15,7 +15,12 @@ export interface INotificationsService {
 	deleteById: (id: string, teamId: string) => Promise<Notification>;
 	handleNotifications: (monitor: Monitor, monitorStatusResponse: MonitorStatusResponse, decision: MonitorActionDecision) => Promise<boolean>;
 
-	sendEscalationNotification: (notificationId: string, monitor: Monitor, monitorStatusResponse: MonitorStatusResponse, decision: MonitorActionDecision) => Promise<boolean>;
+	sendEscalationNotification: (
+		notificationId: string,
+		monitor: Monitor,
+		monitorStatusResponse: MonitorStatusResponse,
+		decision: MonitorActionDecision
+	) => Promise<boolean>;
 	sendTestNotification: (notification: Partial<Notification>) => Promise<boolean>;
 	testAllNotifications: (notificationIds: string[]) => Promise<boolean>;
 }
@@ -142,7 +147,12 @@ export class NotificationsService implements INotificationsService {
 		return await this.sendNotifications(monitor, monitorStatusResponse, decision);
 	};
 
-	sendEscalationNotification = async (notificationId: string, monitor: Monitor, monitorStatusResponse: MonitorStatusResponse, decision: MonitorActionDecision) => {
+	sendEscalationNotification = async (
+		notificationId: string,
+		monitor: Monitor,
+		monitorStatusResponse: MonitorStatusResponse,
+		decision: MonitorActionDecision
+	) => {
 		const notification = await this.notificationsRepository.findById(notificationId, monitor.teamId);
 		if (!notification) {
 			this.logger.warn({
@@ -153,7 +163,12 @@ export class NotificationsService implements INotificationsService {
 			return false;
 		}
 
-		const notificationMessage = this.notificationMessageBuilder.buildMessage(monitor, monitorStatusResponse, decision, this.settingsService.getSettings().clientHost || "");
+		const notificationMessage = this.notificationMessageBuilder.buildMessage(
+			monitor,
+			monitorStatusResponse,
+			decision,
+			this.settingsService.getSettings().clientHost || ""
+		);
 		notificationMessage.metadata.notificationReason = "escalation";
 		notificationMessage.content.title = `Escalation: Monitor ${monitor.name} still down`;
 		notificationMessage.content.summary = `Escalation alert: Monitor "${monitor.name}" is still down after the configured delay.`;
