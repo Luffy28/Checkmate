@@ -351,6 +351,11 @@ class MongoMonitorsRepository implements IMonitorsRepository {
 		};
 
 		const notificationIds = (doc.notifications ?? []).map((notification) => toStringId(notification));
+		const notificationEscalations = (doc.notificationEscalations ?? []).map((escalation: any) => ({
+			notificationId: toStringId(escalation.notificationId),
+			delayMinutes: escalation.delayMinutes ?? 0,
+			channelId: toStringId(escalation.channelId),
+		}));
 
 		return {
 			id: toStringId(doc._id),
@@ -374,6 +379,7 @@ class MongoMonitorsRepository implements IMonitorsRepository {
 			interval: doc.interval,
 			uptimePercentage: doc.uptimePercentage ?? undefined,
 			notifications: notificationIds,
+			notificationEscalations,
 			secret: doc.secret ?? undefined,
 			cpuAlertThreshold: doc.cpuAlertThreshold,
 			cpuAlertCounter: doc.cpuAlertCounter,
@@ -410,6 +416,11 @@ class MongoMonitorsRepository implements IMonitorsRepository {
 		};
 
 		const notificationIds = (doc.notifications ?? []).map((notification: unknown) => toStringId(notification));
+		const notificationEscalations = (doc.notificationEscalations ?? []).map((escalation: any) => ({
+			notificationId: toStringId(escalation.notificationId),
+			delayMinutes: escalation.delayMinutes ?? 0,
+			channelId: toStringId(escalation.channelId),
+		}));
 
 		return {
 			id: toStringId(doc._id),

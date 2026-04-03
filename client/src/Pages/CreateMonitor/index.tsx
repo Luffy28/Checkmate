@@ -28,6 +28,7 @@ import {
 	SwitchComponent as Switch,
 	SliderWithLabel,
 	Dialog,
+	FieldLabel,
 } from "@/Components/inputs";
 import { SPACING, LAYOUT } from "@/Utils/Theme/constants";
 import { useGet, usePost, usePatch, useDelete } from "@/Hooks/UseApi";
@@ -758,6 +759,82 @@ const CreateMonitorPage = () => {
 											))}
 										</Stack>
 									)}
+								</Stack>
+							);
+						}}
+					/>
+				}
+			/>
+
+			<ConfigBox
+				title={t("pages.createMonitor.form.escalations.title")}
+				subtitle={t("pages.createMonitor.form.escalations.description")}
+				rightContent={
+					<Controller
+						name="notificationEscalations"
+						control={control}
+						render={({ field }) => {
+							const escalations = field.value ?? [];
+							const notificationOptions = (notifications ?? []).map((n) => ({
+								...n,
+								name: n.notificationName,
+							}));
+							return (
+								<Stack spacing={theme.spacing(LAYOUT.MD)}>
+									{escalations.map((escalation: any, idx: number) => (
+										<Stack direction="column" spacing={theme.spacing(LAYOUT.MD)} key={`${escalation.notificationId || "new"}-${idx}`}>
+											<Select
+												value={escalation.notificationId || ""}
+												fieldLabel={t("pages.createMonitor.form.escalations.option.notification.label")}
+												onChange={(event) => {
+													const notificationId = event.target.value;
+													const updated = [...escalations];
+													updated[idx] = {
+														...updated[idx],
+														notificationId,
+														channelId: notificationId,
+													};
+													field.onChange(updated);
+												}}
+												fullWidth
+											>
+												<MenuItem value="">{t("pages.createMonitor.form.escalations.option.notification.placeholder")}</MenuItem>
+												{notificationOptions.map((option) => (
+													<MenuItem key={option.id} value={option.id}>{option.name}</MenuItem>
+												))}
+											</Select>
+											<Stack direction="column" spacing={theme.spacing(SPACING.SM)}>
+												<FieldLabel>{t("pages.createMonitor.form.escalations.option.delay.label")}</FieldLabel>
+												<Stack direction="row" alignItems="flex-end" spacing={theme.spacing(SPACING.SM)}>
+													<TextField
+														type="number"
+														min={1}
+														fullWidth
+														value={escalation.delayMinutes ?? 5}
+														onChange={(event) => {
+															const delayMinutes = Number(event.target.value);
+															const updated = [...escalations];
+															updated[idx] = { ...updated[idx], delayMinutes };
+															field.onChange(updated);
+														}}
+														/>
+													<IconButton
+														size="small"
+														onClick={() => field.onChange(escalations.filter((_, i: number) => i !== idx))}
+														aria-label="Remove escalation"
+													>
+														<Trash2 size={16} />
+													</IconButton>
+												</Stack>
+											</Stack>
+										</Stack>
+									))}
+									<Button
+										variant="outlined"
+										onClick={() => field.onChange([...escalations, { notificationId: "", channelId: "", delayMinutes: 5 }])}
+									>
+										{t("pages.createMonitor.form.escalations.action.add")}
+									</Button>
 								</Stack>
 							);
 						}}
