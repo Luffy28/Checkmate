@@ -200,7 +200,7 @@ export class SuperSimpleQueueHelper implements ISuperSimpleQueueHelper {
 	};
 
 	private processEscalations = async (monitor: Monitor, monitorStatusResponse: any, decision: MonitorActionDecision) => {
-		if (!monitor.notificationEscalations || monitor.notificationEscalations.length === 0) {
+		if (!monitor.notificationEscalations || !monitor.notificationEscalations.notificationIds || monitor.notificationEscalations.notificationIds.length === 0) {
 			return;
 		}
 
@@ -215,31 +215,37 @@ export class SuperSimpleQueueHelper implements ISuperSimpleQueueHelper {
 		let hasEscalation = false;
 		const updatedEscalations = activeIncident.escalationsSent ? [...activeIncident.escalationsSent] : [];
 
-		for (const escalation of monitor.notificationEscalations) {
-			if (!escalation.channelId || escalation.delayMinutes <= 0) {
+		const escalation = monitor.notificationEscalations;
+		if (!escalation.notificationIds || escalation.notificationIds.length === 0 || escalation.delayMinutes <= 0) {
+			return;
+		}
+
+		const escalationDeadline = incidentStart + escalation.delayMinutes * 60 * 1000;
+		if (now < escalationDeadline) {
+			return;
+		}
+
+		for (const channelId of escalation.notificationIds) {
+			if (sentEscalations.has(channelId)) {
 				continue;
 			}
 
-			const alreadySent = sentEscalations.has(escalation.channelId);
-			const escalationDeadline = incidentStart + escalation.delayMinutes * 60 * 1000;
-
-			if (!alreadySent && now >= escalationDeadline) {
-				const sent = await this.notificationsService
-					.sendEscalationNotification(escalation.channelId, monitor, monitorStatusResponse, decision)
-					.catch((error: unknown) => {
-						this.logger.warn({
-							message: `Failed escalation for channel ${escalation.channelId}: ${error instanceof Error ? error.message : "Unknown error"}`,
-							service: SERVICE_NAME,
-							method: "processEscalations",
-							stack: error instanceof Error ? error.stack : undefined,
-						});
-						return false;
+			const sent = await this.notificationsService
+				.sendEscalationNotification(channelId, monitor, monitorStatusResponse, decision)
+				.catch((error: unknown) => {
+					this.logger.warn({
+						message: `Failed escalation for channel ${channelId}: ${error instanceof Error ? error.message : "Unknown error"}`,
+						service: SERVICE_NAME,
+						method: "processEscalations",
+						stack: error instanceof Error ? error.stack : undefined,
 					});
+					return false;
+				});
 
-				if (sent) {
-					updatedEscalations.push({ channelId: escalation.channelId, sentAt: new Date().toISOString() });
-					hasEscalation = true;
-				}
+			if (sent) {
+				updatedEscalations.push({ channelId, sentAt: new Date().toISOString() });
+				sentEscalations.add(channelId);
+				hasEscalation = true;
 			}
 		}
 

@@ -100,7 +100,7 @@ describe("SuperSimpleQueueHelper", () => {
 				id: "m2",
 				teamId: "team",
 				notifications: ["n1"],
-				notificationEscalations: [{ notificationId: "n1", delayMinutes: 5, channelId: "n2" }],
+				notificationEscalations: { notificationIds: ["n2"], delayMinutes: 5 },
 			} as Monitor;
 
 			await job(monitor);

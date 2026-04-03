@@ -154,6 +154,13 @@ export class NotificationsService implements INotificationsService {
 		}
 
 		const notificationMessage = this.notificationMessageBuilder.buildMessage(monitor, monitorStatusResponse, decision, this.settingsService.getSettings().clientHost || "");
+		notificationMessage.metadata.notificationReason = "escalation";
+		notificationMessage.content.title = `Escalation: Monitor ${monitor.name} still down`;
+		notificationMessage.content.summary = `Escalation alert: Monitor "${monitor.name}" is still down after the configured delay.`;
+		notificationMessage.content.details = [
+			`Escalation Delay: ${monitor.notificationEscalations?.delayMinutes ?? 0} minute(s)`,
+			...(notificationMessage.content.details ?? []),
+		];
 
 		return this.send(notification, monitor, monitorStatusResponse, decision, notificationMessage);
 	};

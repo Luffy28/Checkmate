@@ -770,110 +770,85 @@ const CreateMonitorPage = () => {
 				title={t("pages.createMonitor.form.escalations.title")}
 				subtitle={t("pages.createMonitor.form.escalations.description")}
 				rightContent={
-					<Controller
-						name="notificationEscalations"
-						control={control}
-						render={({ field }) => {
-							const escalations = field.value ?? [];
-							const notificationOptions = (notifications ?? []).map((n) => ({
-								...n,
-								name: n.notificationName,
-							}));
-							return (
-								<Stack spacing={theme.spacing(LAYOUT.MD)}>
-									{escalations.map((escalation: any, idx: number) => (
-										<Stack direction="column" spacing={theme.spacing(LAYOUT.MD)} key={`${escalation.notificationId || "new"}-${idx}`}>
-											<Select
-												value={escalation.notificationId || ""}
-												fieldLabel={t("pages.createMonitor.form.escalations.option.notification.label")}
-												onChange={(event) => {
-													const notificationId = event.target.value;
-													const updated = [...escalations];
-													updated[idx] = {
-														...updated[idx],
-														notificationId,
-														channelId: notificationId,
-													};
-													field.onChange(updated);
+				<Controller
+					name="notificationEscalations"
+					control={control}
+					render={({ field }) => {
+					const escalation = field.value ?? { notificationIds: [], delayMinutes: 5 };
+					const notificationOptions = (notifications ?? []).map((n) => ({
+						...n,
+						name: n.notificationName,
+					}));
+					return (
+						<Stack spacing={theme.spacing(LAYOUT.MD)}>
+							<FieldLabel>{t("pages.createMonitor.form.escalations.option.delay.label")}</FieldLabel>
+							<TextField
+								type="number"
+								min={1}
+								fullWidth
+								value={escalation.delayMinutes ?? 5}
+								onChange={(e) => {
+									const delay = Number(e.target.value);
+									field.onChange({ ...escalation, delayMinutes: delay });
+								}}
+							/>
+							<FieldLabel>{t("pages.createMonitor.form.escalations.option.notification.label")}</FieldLabel>
+							<Autocomplete
+								multiple
+								options={notificationOptions}
+								value={notificationOptions.filter((option) => escalation.notificationIds?.includes(option.id))}
+								getOptionLabel={(option) => option.name}
+								onChange={(_, value) => {
+									const notificationIds = value.map((item) => item.id);
+									field.onChange({ ...escalation, notificationIds });
+								}}
+								isOptionEqualToValue={(option, value) => option.id === value.id}
+								renderInput={(params) => <TextField {...params} placeholder={t("pages.createMonitor.form.escalations.option.notification.placeholder")} fullWidth />}
+							/>
+							{escalation.notificationIds && escalation.notificationIds.length > 0 && (
+								<Stack
+									flex={1}
+									width="100%"
+								>
+									{notificationOptions
+										.filter((option) => escalation.notificationIds?.includes(option.id))
+										.map((notification, notificationIndex) => (
+										<Stack
+											direction="row"
+											alignItems="center"
+											key={notification.id}
+											width="100%"
+										>
+											<Typography flexGrow={1}>
+												{notification.notificationName}
+											</Typography>
+											<IconButton
+												size="small"
+												onClick={() => {
+													field.onChange({
+														...escalation,
+														notificationIds: escalation.notificationIds?.filter(
+															(id: string) => id !== notification.id
+														) || []
+													});
 												}}
-												fullWidth
+												aria-label="Remove notification"
 											>
-												<MenuItem value="">{t("pages.createMonitor.form.escalations.option.notification.placeholder")}</MenuItem>
-												{notificationOptions.map((option) => (
-													<MenuItem key={option.id} value={option.id}>{option.name}</MenuItem>
-												))}
-											</Select>
-											<Stack direction="column" spacing={theme.spacing(SPACING.SM)}>
-												<FieldLabel>{t("pages.createMonitor.form.escalations.option.delay.label")}</FieldLabel>
-												<Stack direction="row" alignItems="flex-end" spacing={theme.spacing(SPACING.SM)}>
-													<TextField
-														type="number"
-														min={1}
-														fullWidth
-														value={escalation.delayMinutes ?? 5}
-														onChange={(event) => {
-															const delayMinutes = Number(event.target.value);
-															const updated = [...escalations];
-															updated[idx] = { ...updated[idx], delayMinutes };
-															field.onChange(updated);
-														}}
-														/>
-													<IconButton
-														size="small"
-														onClick={() => field.onChange(escalations.filter((_, i: number) => i !== idx))}
-														aria-label="Remove escalation"
-													>
-														<Trash2 size={16} />
-													</IconButton>
-												</Stack>
-											</Stack>
+												<Trash2 size={16} />
+											</IconButton>
+											{notificationIndex < (escalation.notificationIds?.length || 0) - 1 && <Divider />}
 										</Stack>
 									))}
-									<Button
-										variant="outlined"
-										onClick={() => field.onChange([...escalations, { notificationId: "", channelId: "", delayMinutes: 5 }])}
-									>
-										{t("pages.createMonitor.form.escalations.action.add")}
-									</Button>
-								</Stack>
-							);
-						}}
-					/>
-				}
-			/>
-
-			{(watchedType === "http" ||
-				watchedType === "grpc" ||
-				watchedType === "websocket") && (
-				<ConfigBox
-					title={t("pages.createMonitor.form.ignoreTls.title")}
-					subtitle={t("pages.createMonitor.form.ignoreTls.description")}
-					rightContent={
-						<Controller
-							name="ignoreTlsErrors"
-							control={control}
-							render={({ field }) => (
-								<Stack
-									direction="row"
-									alignItems="center"
-									spacing={theme.spacing(SPACING.LG)}
-								>
-									<Switch
-										checked={field.value ?? false}
-										onChange={(e) => field.onChange(e.target.checked)}
-									/>
-									<Typography>
-										{t("pages.createMonitor.form.ignoreTls.option.tls.label")}
-									</Typography>
 								</Stack>
 							)}
-						/>
-					}
+						</Stack>
+				);
+				}}
 				/>
-			)}
-
-			{watchedType === "http" && (
-				<ConfigBox
+			}
+		/>
+		{watchedType === "http" && (
+			<ConfigBox
 					title={t("pages.createMonitor.form.advanced.title")}
 					subtitle={t("pages.createMonitor.form.advanced.description")}
 					rightContent={
