@@ -786,11 +786,10 @@ const CreateMonitorPage = () => {
 									</FieldLabel>
 									<TextField
 										type="number"
-										min={1}
 										fullWidth
 										value={escalation.delayMinutes ?? 5}
 										onChange={(e) => {
-											const delay = Number(e.target.value);
+											const delay = Math.max(1, Number(e.target.value));
 											field.onChange({ ...escalation, delayMinutes: delay });
 										}}
 									/>
@@ -804,7 +803,7 @@ const CreateMonitorPage = () => {
 											escalation.notificationIds?.includes(option.id)
 										)}
 										getOptionLabel={(option) => option.name}
-										onChange={(_, value) => {
+										onChange={(_, value: Array<{ id: string }>) => {
 											const notificationIds = value.map((item) => item.id);
 											field.onChange({ ...escalation, notificationIds });
 										}}
