@@ -14,7 +14,7 @@ const getBaseDefaults = (data?: Monitor | null) => ({
 	notifications: data?.notifications || [],
 	notificationEscalations: data?.notificationEscalations || {
 		notificationIds: [],
-		delayMinutes: 5,
+		delayMinutes: 0,
 	},
 	statusWindowSize: data?.statusWindowSize || 5,
 	statusWindowThreshold: data?.statusWindowThreshold || 60,

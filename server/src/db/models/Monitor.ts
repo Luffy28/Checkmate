@@ -361,7 +361,7 @@ const MonitorSchema = new Schema<MonitorDocument>(
 			delayMinutes: {
 				type: Number,
 				default: 0,
-				min: 1,
+				min: 0,
 			},
 		},
 		recentChecks: {

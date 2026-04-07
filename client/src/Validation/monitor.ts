@@ -18,7 +18,7 @@ const baseSchema = z.object({
 			notificationIds: z
 				.array(z.string())
 				.min(1, "At least one escalation channel is required"),
-			delayMinutes: z.number().min(1, "Delay must be at least 1 minute"),
+			delayMinutes: z.number().min(0, "Delay must be 0 or more minutes"),
 		})
 		.optional(),
 	statusWindowSize: z

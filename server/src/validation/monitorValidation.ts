@@ -70,7 +70,7 @@ export const createMonitorBodyValidation = z.object({
 	notificationEscalations: z
 		.object({
 			notificationIds: z.array(z.string()).min(1),
-			delayMinutes: z.number().min(1),
+			delayMinutes: z.number().min(0),
 		})
 		.optional(),
 	secret: z.string().optional(),
@@ -109,7 +109,7 @@ export const editMonitorBodyValidation = z.object({
 	notificationEscalations: z
 		.object({
 			notificationIds: z.array(z.string()).min(1),
-			delayMinutes: z.number().min(1),
+			delayMinutes: z.number().min(0),
 		})
 		.optional(),
 	gameId: z.union([z.string(), z.literal("")]).optional(),

@@ -220,7 +220,7 @@ export class SuperSimpleQueueHelper implements ISuperSimpleQueueHelper {
 		const updatedEscalations = activeIncident.escalationsSent ? [...activeIncident.escalationsSent] : [];
 
 		const escalation = monitor.notificationEscalations;
-		if (!escalation.notificationIds || escalation.notificationIds.length === 0 || escalation.delayMinutes <= 0) {
+		if (!escalation.notificationIds || escalation.notificationIds.length === 0 || escalation.delayMinutes < 0) {
 			return;
 		}
 
