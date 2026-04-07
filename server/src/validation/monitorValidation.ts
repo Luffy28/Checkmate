@@ -3,6 +3,8 @@ import { booleanCoercion } from "./shared.js";
 import { GeoContinents } from "@/types/geoCheck.js";
 import { MonitorMatchMethods, MonitorTypes } from "@/types/monitor.js";
 
+const escalationDelaySchema = z.coerce.number().min(0).default(0);
+
 export const getMonitorByIdParamValidation = z.object({
 	monitorId: z.string().min(1, "Monitor ID is required"),
 });
@@ -70,7 +72,7 @@ export const createMonitorBodyValidation = z.object({
 	notificationEscalations: z
 		.object({
 			notificationIds: z.array(z.string()),
-			delayMinutes: z.number().min(0),
+			delayMinutes: escalationDelaySchema,
 		})
 		.optional(),
 	secret: z.string().optional(),
@@ -109,7 +111,7 @@ export const editMonitorBodyValidation = z.object({
 	notificationEscalations: z
 		.object({
 			notificationIds: z.array(z.string()),
-			delayMinutes: z.number().min(0),
+			delayMinutes: escalationDelaySchema,
 		})
 		.optional(),
 	gameId: z.union([z.string(), z.literal("")]).optional(),

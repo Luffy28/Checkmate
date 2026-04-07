@@ -783,6 +783,9 @@ const CreateMonitorPage = () => {
 						control={control}
 						render={({ field }) => {
 							const escalation = field.value ?? { notificationIds: [], delayMinutes: 0 };
+							const delayValue = Number.isFinite(Number(escalation.delayMinutes))
+								? Number(escalation.delayMinutes)
+								: 0;
 							const notificationOptions = (notifications ?? []).map((n) => ({
 								...n,
 								name: n.notificationName,
@@ -795,9 +798,12 @@ const CreateMonitorPage = () => {
 									<TextField
 										type="number"
 										fullWidth
-										value={escalation.delayMinutes ?? 0}
+										value={delayValue}
 										onChange={(e) => {
-											const delay = Math.max(0, Number(e.target.value));
+											const parsed = Number(e.target.value);
+											const delay = Number.isFinite(parsed)
+												? Math.max(0, parsed)
+												: 0;
 											field.onChange({ ...escalation, delayMinutes: delay });
 										}}
 									/>
