@@ -69,7 +69,7 @@ export const createMonitorBodyValidation = z.object({
 	notifications: z.array(z.string()).optional(),
 	notificationEscalations: z
 		.object({
-			notificationIds: z.array(z.string()).min(1),
+			notificationIds: z.array(z.string()),
 			delayMinutes: z.number().min(0),
 		})
 		.optional(),
@@ -108,7 +108,7 @@ export const editMonitorBodyValidation = z.object({
 	tempAlertThreshold: z.number().optional(),
 	notificationEscalations: z
 		.object({
-			notificationIds: z.array(z.string()).min(1),
+			notificationIds: z.array(z.string()),
 			delayMinutes: z.number().min(0),
 		})
 		.optional(),
